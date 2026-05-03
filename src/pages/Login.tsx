@@ -1,23 +1,8 @@
 import { supabase } from "../lib/supabaseClient";
-
-export default function Login () {
-    const handleLogin = async (email, password) => {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-        if (error) throw error;
-    };
-    return  ( <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Login</h1>
-        <p>Please log in to access the admin dashboard.</p>
-    </div>);
-}
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GoogleButton from '../components/GoogleButton';
 import { type AuthUser } from '../types/auth';
-
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -26,49 +11,53 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-    
-        const handleLogin = async (email, password) => {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-        if (error) throw error;
-    };
-    
-  const handleEmailLogin = (e: React.FormEvent) => {
+  // Updated Login Logic using Supabase
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Mock Backend Logic
-    setTimeout(() => {
-      if (email === 'admin@hope.inc' && password === 'password123') {
-        const mockUser: AuthUser = {
-          email: 'admin@hope.inc',
-          role: 'ADMIN',
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      if (data.user) {
+        // Map Supabase user to your internal AuthUser type
+        const userProfile: AuthUser = {
+          email: data.user.email || '',
+          role: 'ADMIN', // You might fetch this from a custom 'profiles' table later
           status: 'ACTIVE'
         };
-        localStorage.setItem('hope_cms_session', JSON.stringify(mockUser));
+
+        localStorage.setItem('hope_cms_session', JSON.stringify(userProfile));
         navigate('/customers');
-      } else {
-        setError('Invalid credentials. Hint: admin@hope.inc / password123');
       }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during sign in.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
-  const handleGoogleMock = () => {
+  // Keep for UI demonstration or replace with supabase.auth.signInWithOAuth()
+  const handleGoogleMock = async () => {
     setLoading(true);
-    setTimeout(() => {
-      const mockUser: AuthUser = {
-        email: 'google_user@gmail.com',
-        role: 'USER',
-        status: 'ACTIVE'
-      };
-      localStorage.setItem('hope_cms_session', JSON.stringify(mockUser));
-      navigate('/customers');
+    try {
+      const { error: googleError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/customers'
+        }
+      });
+      if (googleError) throw googleError;
+    } catch (err: any) {
+      setError(err.message);
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
