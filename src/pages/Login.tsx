@@ -26,6 +26,15 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
+    
+        const handleLogin = async (email, password) => {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+        if (error) throw error;
+    };
+    
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
