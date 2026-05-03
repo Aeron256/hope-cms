@@ -1,14 +1,20 @@
 import { Navigate } from 'react-router-dom';
 
-// For now, this is a mock check. M4 will later connect this to Supabase auth.
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = true; // Placeholder: change to false to test redirect
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
 
-  if (!isAuthenticated) {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  // Check if our specific session key exists in localStorage
+  const session = localStorage.getItem('hope_cms_session');
+  
+  // If the string is missing or null, they aren't logged in
+  if (!session) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  // They are authenticated, let them through
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
