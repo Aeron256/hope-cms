@@ -31,6 +31,27 @@ function App() {
       </BrowserRouter>
 
     </AuthProvider>
+import Register from './pages/Register';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        
+        {/* Protected Routes */}
+        <Route path="/customers" element={<ProtectedRoute><Customers /></ProtectedRoute>} />
+        <Route path="/sales" element={<ProtectedRoute><Sales /></ProtectedRoute>} />
+        <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+        <Route path="/deleted-customers" element={<ProtectedRoute><DeletedCustomers /></ProtectedRoute>} />
+        
+        {/* Default Redirect */}
+        <Route path="/" element={<Navigate to="/customers" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
