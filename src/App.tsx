@@ -8,12 +8,14 @@ import DeletedCustomers from './pages/DeletedCustomers';
 import AuthCallback from './pages/AuthCallback';
 import Login from './pages/Login';
 import { Navigate } from 'react-router-dom';
+import Register from './pages/Register';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         
         {/* Protected Routes */}
