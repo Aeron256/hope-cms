@@ -13,19 +13,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Helper function to check if the user is ACTIVE in our database
+  const checkUserStatus = async (user: User) => {
+    const { data: profile, error } = await supabase
+      .from('USER')
+      .select('record_status')
+      .eq('id', user.id)
+      .single();
+
+    if (error || profile?.record_status !== 'ACTIVE') {
+      // THE GUARD: If they aren't active, log them out immediately
+      await supabase.auth.signOut();
+      alert("Access Denied: Your account is pending administrator approval.");
+      setCurrentUser(null);
+      return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
-    // Check session on mount
     const initializeAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setCurrentUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Run the guard check on initial load
+        await checkUserStatus(session.user);
+      } else {
+        setCurrentUser(null);
+      }
       setLoading(false);
     };
 
     initializeAuth();
 
-    // Listen for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setCurrentUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        // Run the guard check when a user signs in
+        const isActive = await checkUserStatus(session.user);
+        if (isActive) {
+          setCurrentUser(session.user);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setCurrentUser(null);
+      } else {
+        setCurrentUser(session?.user ?? null);
+      }
     });
 
     return () => subscription.unsubscribe();
