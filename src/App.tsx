@@ -9,13 +9,16 @@ import AuthCallback from './pages/AuthCallback';
 import Login from './pages/Login';
 import { Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import RegisterPage from './pages/Register';
 
 function App() {
   return (
+    <ProtectedRoute>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           
           {/* Protected Routes */}
@@ -31,6 +34,7 @@ function App() {
       </BrowserRouter>
 
     </AuthProvider>
+    </ProtectedRoute>
   )
 }
 
