@@ -10,10 +10,12 @@ import Login from './pages/Login';
 import { Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import RegisterPage from './pages/Register';
+import { UserRightsProvider } from './context/UserRightsContext';
 
 function App() {
   return (
     <ProtectedRoute>
+    <UserRightsProvider>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -32,8 +34,9 @@ function App() {
           <Route path="/" element={<Navigate to="/customers" replace />} />
         </Routes>
       </BrowserRouter>
-
+    
     </AuthProvider>
+    </UserRightsProvider>
     </ProtectedRoute>
   )
 }
