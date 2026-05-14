@@ -12,6 +12,8 @@ import { AuthProvider } from './context/AuthContext';
 import RegisterPage from './pages/Register';
 
 function App() {
+
+
   return (
     <ProtectedRoute>
     <AuthProvider>
