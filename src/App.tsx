@@ -10,10 +10,10 @@ import Login from './pages/Login';
 import { Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import RegisterPage from './pages/Register';
-
 function App() {
+
+
   return (
-    <ProtectedRoute>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -34,7 +34,6 @@ function App() {
       </BrowserRouter>
 
     </AuthProvider>
-    </ProtectedRoute>
   )
 }
 
