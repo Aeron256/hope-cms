@@ -13,8 +13,9 @@ import RegisterPage from './pages/Register';
 import { UserRightsProvider } from './context/UserRightsContext';
 
 function App() {
+
+
   return (
-    <ProtectedRoute>
     <AuthProvider>
       <UserRightsProvider>
       <BrowserRouter>
@@ -36,7 +37,6 @@ function App() {
       </BrowserRouter>
     </UserRightsProvider>
     </AuthProvider>
-    </ProtectedRoute>
   )
 }
 
