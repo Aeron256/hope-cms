@@ -18,6 +18,17 @@ export const getCustomers = async (userType: UserRole) => {
   return data;
 };
 
+export const getCustomerByCustNo = async (custNo: string) => {
+  const { data, error } = await supabase
+    .from('customer')
+    .select('*')
+    .eq('custno', custNo)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+};
+
 export const addCustomer = async (customerData: CustomerData) => {
   const { data, error } = await supabase
     .from('customer')
