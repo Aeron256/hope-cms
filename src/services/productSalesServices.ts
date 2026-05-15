@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 import type { SalesDetailItem, SalesRecord } from '../types/sales';
+import type { ProductData } from '../types/product';
 
 /**
  * Fetches all sales transaction records associated with a specific customer
@@ -44,7 +45,7 @@ export const getSalesDetail = async (transNo: string): Promise<SalesDetailItem[]
       quantity: Number(item.quantity),
       product: item.product
         ? {
-            prodCode: item.product.prodcode,
+            prodcode: item.product.prodcode,
             description: item.product.description,
             unit: item.product.unit,
           }
@@ -74,13 +75,31 @@ export const getSalesDetailWithLatestPrice = async (transNo: string): Promise<Sa
 /**
  * Fetches a list of all products in the database inventory catalogs
  */
-export const getProducts = async () => {
+export const getProducts = async (): Promise<ProductData[]> => {
   const { data, error } = await supabase
     .from('product')
     .select('*');
 
   if (error) throw error;
-  return data;
+
+  return (
+    (data as any[] | null)?.map((item) => ({
+      prodcode: item.prodcode,
+      description: item.description,
+      unit: item.unit,
+    })) ?? []
+  );
+};
+
+export const getProductCatalogue = async (): Promise<ProductData[]> => {
+  const products = await getProducts();
+
+  return await Promise.all(
+    products.map(async (product) => ({
+      ...product,
+      unitPrice: await getCurrentPrice(product.prodcode),
+    })),
+  );
 };
 
 /**

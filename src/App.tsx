@@ -4,7 +4,7 @@ import { AdminRouteGuard } from './components/AdminRouteGuard'; // Make sure the
 import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
 import Sales from './pages/Sales';
-import Products from './pages/Products';
+import ProductCatalogue from './pages/ProductCatalogue';
 import Admin from './pages/Admin';
 import DeletedCustomers from './pages/DeletedCustomers';
 import AuthCallback from './pages/AuthCallback';
@@ -33,7 +33,7 @@ function App() {
               <Route path="/customers" element={<Customers />} />
               <Route path="/customers/:custno" element={<CustomerDetail />} />
               <Route path="/sales" element={<Sales />} />
-              <Route path="/products" element={<Products />} />
+              <Route path="/products" element={<ProductCatalogue />} />
               
               {/* 2. Elevated Administrative Layer */}
               <Route element={<AdminRouteGuard />}>
