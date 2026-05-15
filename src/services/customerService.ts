@@ -29,6 +29,17 @@ export const getCustomerByCustNo = async (custNo: string) => {
   return data;
 };
 
+export const getDeletedCustomers = async () => {
+  const { data, error } = await supabase
+    .from('customer')
+    .select('*')
+    .eq('record_status', 'INACTIVE')
+    .order('custno', { ascending: true });
+
+  if (error) throw error;
+  return data;
+};
+
 export const addCustomer = async (customerData: CustomerData) => {
   const { data, error } = await supabase
     .from('customer')
