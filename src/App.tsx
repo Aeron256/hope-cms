@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import { Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import RegisterPage from './pages/Register';
+// PR4: Added UserRightsProvider to manage user permissions across the app
 import { UserRightsProvider } from './context/UserRightsContext';
 
 function App() {
