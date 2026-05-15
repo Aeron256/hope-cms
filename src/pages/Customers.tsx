@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRights } from '../context/UserRightsContext';
 import { getCustomers } from '../services/customerService';
@@ -149,7 +150,15 @@ export default function Customers() {
             ) : (
               filteredCustomers.map((customer) => (
                 <tr key={customer.custno} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 text-sm font-medium text-slate-900">{customer.custno}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-slate-900">
+                    {rights.CUST_VIEW ? (
+                      <Link to={`/customers/${customer.custno}`} className="text-mint-600 hover:underline">
+                        {customer.custno}
+                      </Link>
+                    ) : (
+                      customer.custno
+                    )}
+                  </td>
                   <td className="px-6 py-4 text-sm text-slate-700">{customer.custname}</td>
                   <td className="px-6 py-4 text-sm text-slate-700">{customer.address}</td>
                   <td className="px-6 py-4 text-sm text-slate-700">{customer.payterm}</td>

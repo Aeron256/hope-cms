@@ -1,14 +1,16 @@
 import { supabase } from '../lib/supabaseClient';
+import type { SalesDetailItem, SalesRecord } from '../types/sales';
 
 /**
  * Fetches all sales transaction records associated with a specific customer
  * Used to populate the embedded sales history panel in the CustomerDetailPage
  */
-export const getSalesByCustomer = async (custNo: string) => {
+export const getSalesByCustomer = async (custNo: string): Promise<SalesRecord[]> => {
   const { data, error } = await supabase
     .from('sales')
     .select('*')
-    .eq('custno', custNo);
+    .eq('custno', custNo)
+    .order('salesdate', { ascending: false });
 
   if (error) throw error;
   return data;
@@ -18,12 +20,13 @@ export const getSalesByCustomer = async (custNo: string) => {
  * Fetches detailed line items for a specific transaction invoice
  * Joins sales detail records with product profiles and historic item pricing
  */
-export const getSalesDetail = async (transNo: string) => {
+export const getSalesDetail = async (transNo: string): Promise<SalesDetailItem[]> => {
   const { data, error } = await supabase
     .from('salesdetail')
     .select(`
       transno,
-        prodcode,
+      prodcode,
+      quantity,
       product (
         prodcode,
         description,
@@ -33,7 +36,39 @@ export const getSalesDetail = async (transNo: string) => {
     .eq('transno', transNo);
 
   if (error) throw error;
-  return data;
+
+  return (
+    (data as any[] | null)?.map((item) => ({
+      transNo: item.transno,
+      prodCode: item.prodcode,
+      quantity: Number(item.quantity),
+      product: item.product
+        ? {
+            prodCode: item.product.prodcode,
+            description: item.product.description,
+            unit: item.product.unit,
+          }
+        : undefined,
+    })) ?? []
+  );
+};
+
+export const getSalesDetailWithLatestPrice = async (transNo: string): Promise<SalesDetailItem[]> => {
+  const details = await getSalesDetail(transNo);
+  if (!details || !Array.isArray(details)) {
+    return [];
+  }
+
+  const enriched = await Promise.all(
+    details.map(async (item) => {
+      return {
+        ...item,
+        unitPrice: await getCurrentPrice(item.prodCode),
+      };
+    })
+  );
+
+  return enriched;
 };
 
 /**
@@ -64,12 +99,15 @@ export const getPriceHistory = async (prodCode: string) => {
  * Grabs the most recent active market rate for an inventory asset listing
  */
 export const getCurrentPrice = async (prodCode: string) => {
+  console.log(prodCode)
   const { data, error } = await supabase
     .from('pricehist')
     .select('unitprice')
     .eq('prodcode', prodCode)
-    .limit(1);
+    .order('effdate', { ascending: false })
+    .limit(1)
 
   if (error) throw error;
+  console.log(data)
   return data && data.length > 0 ? data[0].unitprice : null;
 };

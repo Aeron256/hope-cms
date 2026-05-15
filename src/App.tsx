@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoutes';
 import { AdminRouteGuard } from './components/AdminRouteGuard'; // Make sure the path matches your file tree
 import Customers from './pages/Customers';
+import CustomerDetail from './pages/CustomerDetail';
 import Sales from './pages/Sales';
 import Products from './pages/Products';
 import Admin from './pages/Admin';
@@ -30,6 +31,7 @@ function App() {
               
               {/* General User Routes */}
               <Route path="/customers" element={<Customers />} />
+              <Route path="/customers/:custno" element={<CustomerDetail />} />
               <Route path="/sales" element={<Sales />} />
               <Route path="/products" element={<Products />} />
               
