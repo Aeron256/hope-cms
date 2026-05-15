@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import RegisterPage from './pages/Register';
 import { AuthProvider } from './context/AuthContext';
 import { UserRightsProvider } from './context/UserRightsContext';
+import InactiveAccount from './pages/InactiveAccount';
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
-            
+            <Route path="/inactive-account" element={<InactiveAccount />} />
+
             {/* 1. Global Authenticated Layer */}
             <Route element={<ProtectedRoute />}>
               

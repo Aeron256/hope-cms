@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
 import { supabase } from '../lib/supabaseClient'; 
 import { useAuth } from './AuthContext';       
 
@@ -46,12 +46,19 @@ const defaultRights: RightsMatrix = {
 export const UserRightsProvider: React.FC<UserRightsProviderProps> = ({ children }) => {
   const [rights, setRights] = useState<RightsMatrix>(defaultRights);
   const [loadingRights, setLoadingRights] = useState<boolean>(true);
-  const { currentUser } = useAuth(); 
+  const { currentUser } = useAuth();
+  const lastRightsUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     const fetchUserRights = async () => {
       if (!currentUser) {
+        lastRightsUserIdRef.current = null;
         setRights(defaultRights);
+        setLoadingRights(false);
+        return;
+      }
+
+      if (lastRightsUserIdRef.current === currentUser.id) {
         setLoadingRights(false);
         return;
       }
@@ -97,7 +104,7 @@ export const UserRightsProvider: React.FC<UserRightsProviderProps> = ({ children
     };
 
     fetchUserRights();
-  }, [currentUser]);
+  }, [currentUser?.id]);
 
   return (
     <UserRightsContext.Provider value={{ rights, loadingRights }}>

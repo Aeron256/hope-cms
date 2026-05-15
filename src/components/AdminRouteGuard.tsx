@@ -21,7 +21,7 @@ export const AdminRouteGuard = () => {
   }
 
   // 3. SECURITY GATE: Check if the user has the administrative management flag set to true
-  const hasAdminAccess = rights?.ADM_USER === true;
+  const hasAdminAccess = currentUser?.user_type === 'ADMIN' || currentUser?.user_type == "SUPERADMIN";
 
   // 4. Render protected child routes if allowed; otherwise, kick them back to /customers
   return hasAdminAccess ? <Outlet /> : <Navigate to="/customers" replace />;
